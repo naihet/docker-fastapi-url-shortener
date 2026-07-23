@@ -11,3 +11,31 @@ services:
 
     volumes:
       - .:/app
+
+    depends_on:
+      - postgres
+
+
+  postgres:
+
+    image: postgres:16
+
+    container_name: shortener-postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shortener
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+
+  postgres_data:
