@@ -12,6 +12,8 @@ from app.schemas import URLCreate
 
 from app.crud import create_url
 
+from app.crud import get_urls
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -32,3 +34,10 @@ def create(
 ):
 
     return create_url(db, url)
+
+@app.get("/urls")
+def read_urls(
+    db: Session = Depends(get_db)
+):
+
+    return get_urls(db)

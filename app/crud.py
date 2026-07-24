@@ -25,3 +25,7 @@ def create_url(
     db.refresh(new_url)
 
     return new_url
+
+def get_urls(db: Session):
+
+    return db.query(URL).all()
