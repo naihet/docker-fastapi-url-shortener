@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -11,8 +12,8 @@ from app.models import Base
 from app.schemas import URLCreate
 
 from app.crud import create_url
-
 from app.crud import get_urls
+from app.crud import get_url
 
 Base.metadata.create_all(bind=engine)
 
@@ -35,9 +36,31 @@ def create(
 
     return create_url(db, url)
 
+
 @app.get("/urls")
 def read_urls(
     db: Session = Depends(get_db)
 ):
 
     return get_urls(db)
+
+
+@app.get("/urls/{url_id}")
+def read_url(
+    url_id: int,
+    db: Session = Depends(get_db)
+):
+
+    url = get_url(
+        db,
+        url_id
+    )
+
+    if url is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="URL not found"
+        )
+
+    return url
