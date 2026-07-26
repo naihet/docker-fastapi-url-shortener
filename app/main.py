@@ -14,6 +14,7 @@ from app.schemas import URLCreate
 from app.crud import create_url
 from app.crud import get_urls
 from app.crud import get_url
+from app.crud import delete_url
 
 Base.metadata.create_all(bind=engine)
 
@@ -64,3 +65,25 @@ def read_url(
         )
 
     return url
+
+@app.delete("/urls/{url_id}")
+def remove_url(
+    url_id: int,
+    db: Session = Depends(get_db)
+):
+
+    url = delete_url(
+        db,
+        url_id
+    )
+
+    if url is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="URL not found"
+        )
+
+    return {
+        "message": "URL deleted successfully"
+    }

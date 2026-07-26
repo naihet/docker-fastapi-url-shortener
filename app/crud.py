@@ -38,3 +38,23 @@ def get_url(
         .filter(URL.id == url_id)
         .first()
     )
+
+def delete_url(
+    db: Session,
+    url_id: int
+):
+
+    url = (
+        db.query(URL)
+        .filter(URL.id == url_id)
+        .first()
+    )
+
+    if url is None:
+        return None
+
+    db.delete(url)
+
+    db.commit()
+
+    return url
