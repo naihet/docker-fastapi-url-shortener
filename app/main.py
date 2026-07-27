@@ -3,6 +3,7 @@ from fastapi import Depends
 from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.database import engine
 from app.database import get_db
@@ -34,9 +35,19 @@ def create(
     url: URLCreate,
     db: Session = Depends(get_db)
 ):
+    try:
 
-    return create_url(db, url)
+        return create_url(db, url)
 
+    except IntegrityError:
+
+        raise HTTPException(
+
+            status_code=409,
+
+            detail="Short code already exists"
+
+        )
 
 @app.get("/urls")
 def read_urls(

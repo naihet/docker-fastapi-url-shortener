@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.models import URL
 from app.schemas import URLCreate
@@ -15,7 +16,17 @@ def create_url(
     )
 
     db.add(new_url)
-    db.commit()
+
+    try:
+
+        db.commit()
+
+    except IntegrityError:
+
+        db.rollback()
+
+        raise
+
     db.refresh(new_url)
 
     return new_url
