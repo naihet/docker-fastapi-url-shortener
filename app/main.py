@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi import Depends
 from fastapi import HTTPException
+from fastapi.responses import RedirectResponse
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -17,6 +18,7 @@ from app.crud import create_url
 from app.crud import get_urls
 from app.crud import get_url
 from app.crud import delete_url
+from app.crud import get_url_by_code
 
 Base.metadata.create_all(bind=engine)
 
@@ -99,3 +101,26 @@ def remove_url(
     return {
         "message": "URL deleted successfully"
     }
+
+
+@app.get("/{short_code}")
+def redirect_url(
+    short_code: str,
+    db: Session = Depends(get_db)
+):
+
+    url = get_url_by_code(
+        db,
+        short_code
+    )
+
+    if url is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Short URL not found"
+        )
+
+    return RedirectResponse(
+        url.original_url
+    )

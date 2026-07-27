@@ -69,3 +69,14 @@ def delete_url(
     db.commit()
 
     return url
+
+def get_url_by_code(
+    db: Session,
+    short_code: str
+):
+
+    return (
+        db.query(URL)
+        .filter(URL.short_code == short_code)
+        .first()
+    )
