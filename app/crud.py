@@ -80,3 +80,16 @@ def get_url_by_code(
         .filter(URL.short_code == short_code)
         .first()
     )
+
+def increment_click(
+    db: Session,
+    url: URL
+):
+
+    url.clicks += 1
+
+    db.commit()
+
+    db.refresh(url)
+
+    return url

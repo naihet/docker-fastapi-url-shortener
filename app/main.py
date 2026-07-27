@@ -19,6 +19,7 @@ from app.crud import get_urls
 from app.crud import get_url
 from app.crud import delete_url
 from app.crud import get_url_by_code
+from app.crud import increment_click
 
 Base.metadata.create_all(bind=engine)
 
@@ -120,6 +121,11 @@ def redirect_url(
             status_code=404,
             detail="Short URL not found"
         )
+
+    increment_click(
+        db,
+        url
+    )
 
     return RedirectResponse(
         url.original_url
