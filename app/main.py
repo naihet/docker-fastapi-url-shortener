@@ -11,6 +11,7 @@ from app.database import get_db
 from app.models import Base
 
 from app.schemas import URLCreate
+from app.schemas import URLResponse
 
 from app.crud import create_url
 from app.crud import get_urls
@@ -30,7 +31,7 @@ def home():
     }
 
 
-@app.post("/urls")
+@app.post("/urls", response_model=URLResponse)
 def create(
     url: URLCreate,
     db: Session = Depends(get_db)
@@ -49,7 +50,7 @@ def create(
 
         )
 
-@app.get("/urls")
+@app.get("/urls", response_model=list[URLResponse])
 def read_urls(
     db: Session = Depends(get_db)
 ):
@@ -57,7 +58,7 @@ def read_urls(
     return get_urls(db)
 
 
-@app.get("/urls/{url_id}")
+@app.get("/urls/{url_id}", response_model=URLResponse)
 def read_url(
     url_id: int,
     db: Session = Depends(get_db)
