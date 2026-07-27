@@ -5,8 +5,6 @@ class URLCreate(BaseModel):
 
     original_url: str
 
-    short_code: str
-
 #---------------------------------
 
 class URLResponse(BaseModel):

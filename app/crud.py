@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.models import URL
 from app.schemas import URLCreate
-
+from app.utils import generate_short_code
 
 def create_url(
     db: Session,
@@ -12,7 +12,7 @@ def create_url(
 
     new_url = URL(
         original_url=url.original_url,
-        short_code=url.short_code
+        short_code=generate_short_code()
     )
 
     db.add(new_url)
