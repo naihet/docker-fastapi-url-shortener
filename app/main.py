@@ -21,6 +21,8 @@ from app.crud import delete_url
 from app.crud import get_url_by_code
 from app.crud import increment_click
 
+from app.redis_client import redis_client
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -110,6 +112,35 @@ def redirect_url(
     db: Session = Depends(get_db)
 ):
 
+    # -------------------------
+    # Search Redis
+    # -------------------------
+    cached_url = redis_client.get(short_code)
+
+    if cached_url:
+
+        print("Redis HIT")
+
+        # Clicked counts PostgreSQL
+        url = get_url_by_code(
+            db,
+            short_code
+        )
+
+        if url:
+            increment_click(
+                db,
+                url
+            )
+
+        return RedirectResponse(cached_url)
+
+    # -------------------------
+    # 2. Redis MISS
+    # -------------------------
+
+    print("Redis MISS")
+
     url = get_url_by_code(
         db,
         short_code
@@ -122,10 +153,28 @@ def redirect_url(
             detail="Short URL not found"
         )
 
+    # -------------------------
+    # 3. Save Redis
+    # -------------------------
+
+    redis_client.setex(
+        short_code,
+        300,                # Cache 5 min
+        url.original_url
+    )
+
+    # -------------------------
+    # 4. Ad dClick
+    # -------------------------
+
     increment_click(
         db,
         url
     )
+
+    # -------------------------
+    # 5. Redirect
+    # -------------------------
 
     return RedirectResponse(
         url.original_url
